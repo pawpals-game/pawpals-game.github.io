@@ -13,8 +13,10 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
+            padding: 24px 0;
+            box-sizing: border-box;
         }
         .container {
             text-align: center;
@@ -23,6 +25,8 @@
             border-radius: 24px;
             box-shadow: 0 8px 24px rgba(210, 180, 140, 0.2);
             border: 2px solid #f3e1cb;
+            width: 320px;
+            box-sizing: border-box;
         }
         h1 {
             font-size: 2.5rem;
@@ -34,7 +38,7 @@
             margin-bottom: 30px;
             color: #7d6b69;
         }
-        .login-btn {
+        .btn {
             background-color: #68b0ab;
             color: white;
             font-size: 1.1rem;
@@ -47,25 +51,321 @@
             text-decoration: none;
             display: inline-block;
         }
-        .login-btn:hover {
+        .btn:hover {
             background-color: #539490;
             transform: scale(1.03);
+        }
+        .btn-secondary {
+            background-color: transparent;
+            color: #7d6b69;
+            border: 2px solid #f3e1cb;
+        }
+        .btn-secondary:hover {
+            background-color: #fff9f0;
+            transform: none;
+        }
+        .error-msg {
+            color: #c0392b;
+            font-size: 0.95rem;
+            margin-top: -16px;
+            margin-bottom: 20px;
+        }
+        .status-msg {
+            font-size: 0.9rem;
+            color: #539490;
+            min-height: 1.2em;
+            margin-top: 10px;
+        }
+        .field-label {
+            text-align: left;
+            font-size: 0.85rem;
+            color: #7d6b69;
+            margin-bottom: 4px;
+            font-weight: bold;
+        }
+        .field {
+            margin-bottom: 18px;
+        }
+        input[type="text"] {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 2px solid #f3e1cb;
+            font-size: 1rem;
+            color: #4a3e3d;
+            font-family: inherit;
+        }
+        .friend-code {
+            font-family: monospace;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            color: #d87a68;
+            font-weight: bold;
+        }
+        .field-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .name-display {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #d87a68;
+            padding: 10px 0;
+        }
+        .field-row input[type="text"] {
+            flex: 1;
+        }
+        .icon-btn {
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 2px solid #f3e1cb;
+            background: white;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            transition: background-color 0.2s;
+        }
+        .icon-btn:hover {
+            background-color: #fff9f0;
+        }
+        .icon-btn.confirm {
+            border-color: #68b0ab;
+            color: #539490;
+        }
+        .icon-btn.cancel {
+            border-color: #e0a596;
+            color: #c0392b;
+        }
+        .counts {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 24px;
+        }
+        .counts div {
+            text-align: center;
+        }
+        .counts .count-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #4a3e3d;
+        }
+        .counts .count-label {
+            font-size: 0.8rem;
+            color: #7d6b69;
+        }
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        [hidden] {
+            display: none !important;
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="loading-view">
+        <h1>🐾 PawPals</h1>
+    </div>
+
+    <div class="container" id="login-view" hidden>
         <h1>🐾 PawPals</h1>
         <p>A cozy space for friends & critters.</p>
+        <p class="error-msg" id="login-error" hidden></p>
         <!-- Defaults to the production backend; overridden below when served from localhost -->
-        <a href="https://pawpals-backend.onrender.com/auth/login" class="login-btn" id="login-btn">
+        <a href="https://pawpals-backend.onrender.com/auth/login" class="btn" id="login-btn">
             Sign in with Google
         </a>
     </div>
+
+    <div class="container" id="profile-view" hidden>
+        <h1>🐾 PawPals</h1>
+
+        <div class="counts">
+            <div>
+                <div class="count-number" id="following-count">0</div>
+                <div class="count-label">Following</div>
+            </div>
+            <div>
+                <div class="count-number" id="followers-count">0</div>
+                <div class="count-label">Followers</div>
+            </div>
+        </div>
+
+        <div class="field">
+            <div class="field-label">Name</div>
+            <div class="field-row">
+                <span class="name-display" id="name-display"></span>
+                <input type="text" id="name-input" minlength="2" maxlength="12" hidden>
+                <button class="icon-btn" id="edit-name-btn" title="Edit name" aria-label="Edit name">✏️</button>
+                <button class="icon-btn confirm" id="confirm-name-btn" title="Save" aria-label="Save" hidden>✓</button>
+                <button class="icon-btn cancel" id="cancel-name-btn" title="Cancel" aria-label="Cancel" hidden>✕</button>
+            </div>
+        </div>
+
+        <div class="field">
+            <div class="field-label">Friend code</div>
+            <div class="field-row">
+                <span class="friend-code" id="friend-code"></span>
+                <button class="icon-btn" id="copy-code-btn" title="Copy friend code" aria-label="Copy friend code">📋</button>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="btn btn-secondary" id="logout-btn">Log out</button>
+        </div>
+        <p class="status-msg" id="status-msg"></p>
+    </div>
+
     <script>
-        if (["localhost", "127.0.0.1"].includes(location.hostname)) {
-            document.getElementById("login-btn").href = "http://localhost:8000/auth/login";
+        const API_BASE = ["localhost", "127.0.0.1"].includes(location.hostname)
+            ? "http://localhost:8000"
+            : "https://pawpals-backend.onrender.com";
+        const TOKEN_KEY = "pawpals_token";
+
+        document.getElementById("login-btn").href = `${API_BASE}/auth/login`;
+
+        const loadingView = document.getElementById("loading-view");
+        const loginView = document.getElementById("login-view");
+        const profileView = document.getElementById("profile-view");
+        const loginError = document.getElementById("login-error");
+
+        function showLogin(errorMessage) {
+            loadingView.hidden = true;
+            loginView.hidden = false;
+            profileView.hidden = true;
+            if (errorMessage) {
+                loginError.textContent = errorMessage;
+                loginError.hidden = false;
+            } else {
+                loginError.hidden = true;
+            }
         }
+
+        function authHeaders() {
+            return { Authorization: `Bearer ${localStorage.getItem(TOKEN_KEY)}` };
+        }
+
+        const nameDisplay = document.getElementById("name-display");
+        const nameInput = document.getElementById("name-input");
+        const editNameBtn = document.getElementById("edit-name-btn");
+        const confirmNameBtn = document.getElementById("confirm-name-btn");
+        const cancelNameBtn = document.getElementById("cancel-name-btn");
+        const statusMsg = document.getElementById("status-msg");
+
+        let currentName = "";
+
+        function setNameEditing(isEditing) {
+            nameDisplay.hidden = isEditing;
+            editNameBtn.hidden = isEditing;
+            nameInput.hidden = !isEditing;
+            confirmNameBtn.hidden = !isEditing;
+            cancelNameBtn.hidden = !isEditing;
+            if (isEditing) {
+                nameInput.value = currentName;
+                nameInput.focus();
+            }
+        }
+
+        async function loadProfile() {
+            const [meRes, followingRes, followersRes] = await Promise.all([
+                fetch(`${API_BASE}/users/me`, { headers: authHeaders() }),
+                fetch(`${API_BASE}/follows/following`, { headers: authHeaders() }),
+                fetch(`${API_BASE}/follows/followers`, { headers: authHeaders() }),
+            ]);
+
+            if (meRes.status === 401) {
+                localStorage.removeItem(TOKEN_KEY);
+                showLogin("Your session expired. Please sign in again.");
+                return;
+            }
+
+            const me = await meRes.json();
+            const following = await followingRes.json();
+            const followers = await followersRes.json();
+
+            currentName = me.name || "";
+            nameDisplay.textContent = currentName;
+            setNameEditing(false);
+            document.getElementById("friend-code").textContent = me.friend_code;
+            document.getElementById("following-count").textContent = following.length;
+            document.getElementById("followers-count").textContent = followers.length;
+
+            loadingView.hidden = true;
+            loginView.hidden = true;
+            profileView.hidden = false;
+        }
+
+        editNameBtn.addEventListener("click", () => setNameEditing(true));
+        cancelNameBtn.addEventListener("click", () => setNameEditing(false));
+
+        confirmNameBtn.addEventListener("click", async () => {
+            const name = nameInput.value;
+            statusMsg.textContent = "Saving…";
+
+            const res = await fetch(`${API_BASE}/users/me`, {
+                method: "PATCH",
+                headers: { ...authHeaders(), "Content-Type": "application/json" },
+                body: JSON.stringify({ name }),
+            });
+
+            if (res.status === 401) {
+                localStorage.removeItem(TOKEN_KEY);
+                showLogin("Your session expired. Please sign in again.");
+                return;
+            }
+
+            if (res.ok) {
+                const updated = await res.json();
+                currentName = updated.name || "";
+                nameDisplay.textContent = currentName;
+                setNameEditing(false);
+                statusMsg.textContent = "Saved!";
+            } else {
+                const body = await res.json().catch(() => ({}));
+                statusMsg.textContent = body.detail || "Couldn't save. Please try again.";
+            }
+        });
+
+        document.getElementById("copy-code-btn").addEventListener("click", async () => {
+            const friendCode = document.getElementById("friend-code").textContent;
+            try {
+                await navigator.clipboard.writeText(friendCode);
+                statusMsg.textContent = "Friend code copied!";
+            } catch {
+                statusMsg.textContent = "Couldn't copy. Please copy it manually.";
+            }
+        });
+
+        document.getElementById("logout-btn").addEventListener("click", () => {
+            localStorage.removeItem(TOKEN_KEY);
+            showLogin();
+        });
+
+        (function init() {
+            const hash = new URLSearchParams(location.hash.slice(1));
+            if (hash.has("token")) {
+                localStorage.setItem(TOKEN_KEY, hash.get("token"));
+                history.replaceState(null, "", location.pathname + location.search);
+            } else if (hash.has("error")) {
+                history.replaceState(null, "", location.pathname + location.search);
+                showLogin("Something went wrong signing in. Please try again.");
+                return;
+            }
+
+            if (localStorage.getItem(TOKEN_KEY)) {
+                loadProfile();
+            } else {
+                showLogin();
+            }
+        })();
     </script>
 </body>
 </html>
