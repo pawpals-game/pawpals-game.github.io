@@ -115,9 +115,6 @@ input[type='text'] {
   align-items: center;
   gap: 8px;
 }
-.field-row.centered {
-  justify-content: center;
-}
 
 .name-display {
   font-size: 1.3rem;

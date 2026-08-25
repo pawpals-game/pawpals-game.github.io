@@ -147,7 +147,8 @@ export default function ProfilePage() {
       </div>
 
       <div className="field">
-        <div className="field-row centered">
+        <div className="field-label">Friend code</div>
+        <div className="field-row">
           <span className="friend-code">{profile.friend_code}</span>
           <button
             className="icon-btn"
