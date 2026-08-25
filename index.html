@@ -57,10 +57,15 @@
     <div class="container">
         <h1>🐾 PawPals</h1>
         <p>A cozy space for friends & critters.</p>
-        <!-- Triggers your secure live backend routing pathway -->
-        <a href="https://pawpals-backend.onrender.com/auth/login" class="login-btn">
+        <!-- Defaults to the production backend; overridden below when served from localhost -->
+        <a href="https://pawpals-backend.onrender.com/auth/login" class="login-btn" id="login-btn">
             Sign in with Google
         </a>
     </div>
+    <script>
+        if (["localhost", "127.0.0.1"].includes(location.hostname)) {
+            document.getElementById("login-btn").href = "http://localhost:8000/auth/login";
+        }
+    </script>
 </body>
 </html>
