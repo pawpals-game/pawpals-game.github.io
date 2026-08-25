@@ -1,0 +1,15 @@
+repos:
+  - repo: local
+    hooks:
+      - id: eslint
+        name: eslint
+        entry: pnpm exec eslint .
+        language: system
+        files: \.(ts|tsx)$
+        pass_filenames: false
+      - id: prettier
+        name: prettier
+        entry: pnpm exec prettier --check .
+        language: system
+        files: \.(ts|tsx|css|html|json|ya?ml)$
+        pass_filenames: false
