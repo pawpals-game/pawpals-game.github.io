@@ -7,6 +7,18 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // Restores the real path if we got here via public/404.html's redirect
+      // trick (see that file for why). Runs before the app loads so React
+      // Router sees the correct URL from the first render.
+      ;(function () {
+        var params = new URLSearchParams(location.search)
+        var redirect = params.get('redirect')
+        if (redirect) {
+          history.replaceState(null, '', redirect)
+        }
+      })()
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

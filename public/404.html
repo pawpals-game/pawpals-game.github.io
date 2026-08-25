@@ -1,0 +1,19 @@
+<!doctype html>
+<!--
+  GitHub Pages is a static file server with no server-side routing, so a hard
+  refresh or direct link to a client-side route like /profile 404s before
+  React ever loads. This redirects such requests back to index.html with the
+  original path encoded in a query param; index.html's inline script (below)
+  decodes it and restores the real URL before React Router takes over.
+  Standard pattern: https://github.com/rafgraph/spa-github-pages
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      var path = location.pathname + location.search + location.hash
+      location.replace('/?redirect=' + encodeURIComponent(path))
+    </script>
+  </head>
+  <body></body>
+</html>
